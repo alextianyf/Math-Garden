@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MNIST 手写数字识别 Demo</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <!-- TensorFlow.js + WASM 后端（CDN，适配 GitHub Pages） -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.22.0/dist/tf-backend-wasm.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>MNIST 手写数字识别（Web）</h1>
+    <div class="status">
+      <span id="backend">Backend: —</span>
+      <span id="modelStatus">Model: Loading…</span>
+      <span id="latency">Latency: — ms</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section class="panel panel-draw">
+      <h2>画板</h2>
+      <div class="toolbar">
+        <button id="clearBtn">清空</button>
+        <button id="undoBtn">撤销</button>
+        <label>笔宽 <input id="brushSize" type="range" min="8" max="48" value="24" /></label>
+        <label><input id="eraserToggle" type="checkbox" /> 橡皮擦</label>
+        <button id="inferBtn">识别</button>
+        <label class="upload">上传图片<input id="uploadInput" type="file" accept="image/*" hidden /></label>
+      </div>
+      <canvas id="pad" width="280" height="280" aria-label="手写画板"></canvas>
+      <p class="hint">提示：黑底白字，鼠标/触屏拖动书写。</p>
+    </section>
+
+    <section class="panel panel-preview">
+      <h2>预处理预览（28×28）</h2>
+      <canvas id="preview28" width="112" height="112"></canvas>
+      <div class="toggles">
+        <label><input id="blurToggle" type="checkbox" /> 轻微模糊（模拟 MNIST）</label>
+        <label><input id="centerToggle" type="checkbox" checked /> 质心对齐</label>
+      </div>
+      <details>
+        <summary>调试信息</summary>
+        <pre id="debug"></pre>
+      </details>
+    </section>
+
+    <section class="panel panel-result">
+      <h2>分类结果</h2>
+      <div id="predDigit" class="big-digit">—</div>
+      <div id="bars" class="bars"></div>
+      <ol id="topk" class="topk"></ol>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>部署到 GitHub Pages：确保 <code>./mnist_tfjs_model/model.json</code> 路径有效。</span>
+  </footer>
+
+  <!-- 入口脚本（模块化） -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
