@@ -60,15 +60,20 @@ body{
 
 /* 舞台：左公式 — 右画布 */
 .stage{
-  display:grid;
-  grid-template-columns: minmax(420px, 1fr) 420px;
-  gap: clamp(16px,3vw,36px);
-  align-items:center;
-  margin-top: clamp(8px,2.2vw,14px);
+  display: grid;
+  grid-template-columns: minmax(420px, auto) max-content; /* 左列按内容，至少 420px；右列贴内容 */
+  justify-content: center;                                 /* 整体居中 */
+  column-gap: clamp(24px, 5vw, 56px);                     /* 两列间距更自然 */
+  align-items: center;
+  margin-top: clamp(8px, 2.2vw, 14px);
 }
 
 /* 公式区域（右对齐，让 = 更靠近画布） */
-.equation{ justify-self:end; text-align:right; }
+.equation{
+  justify-self: end;     /* 等式块贴近中轴（右边） */
+  text-align: right;     /* 文本右对齐，= 更靠近画布 */
+  min-width: 420px;      /* 防止等式太短导致整体偏右 */
+}
 .equation .expr{
   display:flex; align-items:baseline; flex-wrap:wrap;
   gap: clamp(12px,2vw,20px);
@@ -89,9 +94,14 @@ body{
 .slot.wrong{ background:#3a1216; color:#fee; border-color:#c33 }
 
 /* 画布卡片 */
+/* ✅ 修改：让卡片贴合内容，消除右侧空白 */
 .answer-box{
-  background:var(--card); border-radius:18px; padding: clamp(10px,2vw,16px);
+  background:var(--card);
+  border-radius:18px;
+  padding: clamp(10px,2vw,16px);
   box-shadow: var(--shadow), inset 0 8px 20px rgba(0,0,0,.25);
+  width: max-content;         /* ← 关键改动 */
+  display: inline-block;      /* ← 关键改动 */
 }
 #pad{
   width: clamp(220px,30vw,360px); height:auto; aspect-ratio:1/1;
@@ -264,6 +274,56 @@ body{
 
 /* 让其它元素别“浮”到顶层（只是以防万一） */
 #pad, .stage, .answer-box, .track-wrap, .track { z-index: 1; position: relative; }
+
+/* ========= World (brighter & higher-contrast) ========= */
+.world{
+  position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+  /* 轻微天空色渐变，加深顶部、提亮中部 */
+  background: radial-gradient(1200px 700px at 50% -250px, rgba(80,140,255,.25) 0, rgba(0,0,0,0) 60%),
+              linear-gradient(#0a1226 0%, #0c1833 55%, #0a1326 100%);
+}
+
+/* 通用滚动动画：不同层覆盖时长即可 */
+@keyframes scroll-x { from{background-position:0 100%} to{background-position:-10000px 100%} }
+
+/* = 星空层：更多/更亮/有微闪烁 = */
+@keyframes twinkle { 0%,100%{opacity:.7} 50%{opacity:1} }
+.world .sky{
+  position:absolute; inset:0;
+  background:
+    /* 一层大星星（更亮更稀疏） */
+    radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.92) 50%, transparent 51%) 0 0/170px 170px,
+    radial-gradient(2px 2px at 38% 42%, rgba(255,255,255,.9)  50%, transparent 51%) 0 0/220px 220px,
+    radial-gradient(2px 2px at 72% 28%, rgba(255,255,255,.85) 50%, transparent 51%) 0 0/260px 260px,
+    /* 一层中星星（更密） */
+    radial-gradient(1.5px 1.5px at 20% 65%, rgba(200,230,255,.85) 50%, transparent 51%) 0 0/180px 180px,
+    radial-gradient(1.5px 1.5px at 60% 75%, rgba(210,235,255,.8)  50%, transparent 51%) 0 0/220px 220px,
+    radial-gradient(1.5px 1.5px at 85% 55%, rgba(210,235,255,.8)  50%, transparent 51%) 0 0/240px 240px,
+    /* 一层微噪点星尘 */
+    radial-gradient(1px 1px at 10% 10%, rgba(255,255,255,.35) 50%, transparent 51%) 0 0/140px 140px,
+    radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,.3)  50%, transparent 51%) 0 0/160px 160px;
+  animation: scroll-x 220s linear infinite, twinkle 3.5s ease-in-out infinite;
+  opacity:.95;
+}
+
+.world .clouds{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(160px 100px at 100px 100%, rgba(20,46,84,.95) 62%, transparent 63%) 0 100%/360px 180px repeat-x,
+    radial-gradient(200px 120px at 200px 100%, rgba(22,54,98,.92) 62%, transparent 63%) 0 100%/420px 200px repeat-x,
+    linear-gradient(to top, rgba(8,22,45,.95), rgba(8,22,45,0) 65%);
+  animation: scroll-x 26s linear infinite;
+  opacity:.95;
+  filter: drop-shadow(0 -6px 10px rgba(0,0,0,.5));
+}
+
+/* = 危险脉冲保持不变，可选 = */
+body.danger .world::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(60% 60% at 50% 60%, rgba(255,60,60,.16), rgba(255,60,60,0) 60%);
+  animation: dangerPulse 1.2s ease-in-out infinite;
+}
+@keyframes dangerPulse { 0%,100%{opacity:.0} 50%{opacity:.4} }
 
 /* 脚注 */
 .footnote{ margin-top: clamp(10px,2.5vw,16px); font-size: clamp(11px,1.6vw,12px); opacity:.7; text-align:center }
