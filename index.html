@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.22.0/dist/tf-backend-wasm.min.js"></script>
 </head>
+
 <body class="garden">
   <!-- Tiny HUD -->
   <div class="hud-mini">
@@ -19,7 +20,7 @@
 
   <!-- Header -->
   <header class="hero">
-    <h1 class="brand">Math Challenge</h1>
+    <h1 class="brand">Math Run</h1>
     <div class="hero-hud">
       <span id="gameLevel" class="chip">Level 1</span>
       <div class="timer hero-timer"><div id="timerBar"></div></div>
@@ -60,21 +61,43 @@
   <!-- Track -->
   <section class="track-wrap">
     <div class="track">
-        <!-- 跑道角色 -->
-        <div id="hero" class="actor">😎</div>
-        <div id="monster" class="actor">👹</div>
+      <div id="hero" class="actor">😎</div>
+      <div id="monster" class="actor">👹</div>
 
-        <!-- 距离 meter（新加） -->
-        <div class="track-meter">
+      <!-- 可选：距离 meter（保留你现在的） -->
+      <div class="track-meter">
         <div class="meter-bg"></div>
         <div id="gapFill" class="meter-fill"></div>
-        <div id="gapText" class="meter-text"></div> <!-- 可选：显示剩余步数/像素 -->
-        </div>
+        <div id="gapText" class="meter-text"></div>
+      </div>
     </div>
-    </section>
+  </section>
 
-  <!-- Logic -->
+  <!-- ===== Help / Onboarding（修改处：移到 body 内 + 改 ID/类名 + 只有 “Got it”） ===== -->
+  <button id="btnHelp" class="help-fab" aria-label="Help">?</button>
+
+  <div id="helpOverlay" class="help-overlay" hidden aria-modal="true" role="dialog">
+    <div class="help-dialog" role="document" aria-labelledby="helpTitle">
+      <h2 id="helpTitle">How to Play</h2>
+      <ul class="help-list">
+        <li>This is <b>Math Run</b> — like Temple Run, but with numbers!</li>
+        <li>You are the runner 😎. Escape the chasing monster 👹.</li>
+        <li>Write your answer (0–9) in the canvas and hit <b>Submit</b>.</li>
+        <li>You only have <b>8 seconds</b> for each problem!</li>
+        <li>Correct answers make 😎 dash forward.</li>
+        <li>Wrong, unclear, or late answers let 👹 catch up.</li>
+        <li>Survive 10 questions to win the run!</li>
+      </ul>
+      <div class="help-actions">
+        <button id="helpGotIt" class="btn accent">Got it</button>
+      </div>
+    </div>
+  </div>
+  <!-- ===== Help 结束 ===== -->
+
+  <!-- Scripts：保证 help.js 在 markup 之后 -->
   <script type="module" src="./js/app.js?v=status-a"></script>
   <script type="module" src="./js/game.js?v=status-a"></script>
+  <script type="module" src="./js/help.js?v=garden-v2"></script>
 </body>
 </html>

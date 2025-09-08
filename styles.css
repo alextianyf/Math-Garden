@@ -35,10 +35,15 @@ body{
   max-width:1200px; margin-inline:auto; padding-inline: clamp(12px,3vw,24px);
 }
 .hero{padding-top:10px}
-.brand{
-  font-size: clamp(32px,4.5vw,56px);
-  line-height:1.1; letter-spacing:.5px; margin:6px 0 8px;
-  text-shadow: 0 2px 0 rgba(0,0,0,.25);
+.brand {
+  font-size: clamp(40px, 6vw, 72px); /* 比之前更大 */
+  line-height: 1.2;
+  letter-spacing: 1px;
+  margin: 12px 0 20px;
+  text-shadow: 0 2px 4px rgba(0,0,0,.3);
+  text-align: center;        /* ⬅️ 居中 */
+  width: 100%;               /* 占满宽度 */
+  display: block;            /* 防止受 flex 影响 */
 }
 .hero-hud{display:flex; align-items:center; gap:10px}
 .chip{background:var(--chip); padding:6px 10px; border-radius:999px; font-size:12px}
@@ -164,6 +169,101 @@ body{
   transform: translateX(0);
   transition: transform .2s ease;
 }
+
+/* ------ Help / Onboarding Modal ------ */
+.help-fab{
+  position: fixed;
+  right: 20px; top: 16px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.14);
+  color:#fff; border:1px solid rgba(255,255,255,.18);
+  font-weight:800; line-height: 36px; text-align:center;
+  cursor:pointer; z-index: 60;
+  backdrop-filter: blur(6px);
+}
+.help-fab:hover{ background: rgba(255,255,255,.22) }
+
+.modal-overlay{
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,.5);
+  display: grid; place-items: center;
+}
+.modal{
+  width: min(560px, 92vw);
+  background: var(--card, rgba(255,255,255,.06));
+  color: var(--ink, #fff);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 22px 20px;
+  box-shadow: var(--shadow, 0 12px 30px rgba(0,0,0,.25));
+}
+.modal h2{
+  margin: 4px 0 8px; font-size: clamp(18px, 2.2vw, 22px);
+}
+.modal-list{
+  margin: 8px 0 14px 18px; padding: 0;
+  display: grid; gap: 6px; font-size: clamp(14px, 1.9vw, 16px);
+}
+.modal-actions{
+  display:flex; gap:10px; justify-content:flex-end; margin-top: 6px;
+}
+
+/* ===== Help overlay ===== */
+.help-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;                 /* 高于一切（画布、轨道等） */
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, black 55%, transparent); /* 半透明遮罩 */
+  backdrop-filter: blur(2px);
+}
+.help-overlay[hidden]{ display: none; }
+
+.help-dialog{
+  width: min(640px, 92vw);
+  background: rgba(22, 30, 54, .96);
+  color: #eaf2ff;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 20px 22px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.45);
+}
+.help-dialog h2{
+  margin: 0 0 10px 0;
+  font-size: clamp(18px, 2.2vw, 22px);
+}
+.help-list{
+  margin: 6px 0 14px;
+  padding-left: 20px;
+  line-height: 1.6;
+  font-size: clamp(14px, 1.8vw, 16px);
+}
+.help-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* 悬浮的 Help 按钮 */
+.help-fab{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9998;
+  width: 44px; height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.12);
+  color: #fff; font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,.35);
+}
+.help-fab:hover{ background: rgba(255,255,255,.18); }
+
+/* 让其它元素别“浮”到顶层（只是以防万一） */
+#pad, .stage, .answer-box, .track-wrap, .track { z-index: 1; position: relative; }
 
 /* 脚注 */
 .footnote{ margin-top: clamp(10px,2.5vw,16px); font-size: clamp(11px,1.6vw,12px); opacity:.7; text-align:center }
