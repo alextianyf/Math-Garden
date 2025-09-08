@@ -1,5 +1,5 @@
-// ---------- Otsu ----------
-export function otsu(gray){ // gray: Float32Array 0..1
+// Otsu
+export function otsu(gray){
   const hist = new Float32Array(256);
   for (const v of gray){ hist[Math.min(255, Math.max(0, (v*255)|0))]++; }
   const total = gray.length;
@@ -16,7 +16,7 @@ export function otsu(gray){ // gray: Float32Array 0..1
   return th/255;
 }
 
-// ---------- Largest Connected Component (4邻接) ----------
+// 最大连通域（4邻接）
 export function largestCC(bin, w, h){
   const visited = new Uint8Array(w*h);
   let best=null, bestSize=0;
@@ -50,7 +50,7 @@ export function largestCC(bin, w, h){
   return best;
 }
 
-// ---------- 质心 ----------
+// 质心
 export function computeCentroid(img, w, h){
   let sum=0, sx=0, sy=0;
   for (let y=0;y<h;y++){
@@ -63,7 +63,7 @@ export function computeCentroid(img, w, h){
   return { cx: sx/sum, cy: sy/sum, mass: sum };
 }
 
-// ---------- 简单高斯模糊（分离1D） ----------
+// 简单高斯模糊（分离1D）
 export function gaussianBlur1D(img, w, h, sigma=0.8, vertical=false){
   const radius = Math.max(1, Math.round(sigma*2.5));
   const k = new Float32Array(radius*2+1);
@@ -102,7 +102,7 @@ export function gaussianBlur1D(img, w, h, sigma=0.8, vertical=false){
   }
 }
 
-// ---------- Softmax & TopK ----------
+// 概率工具
 export function softmax(arr){
   const m = Math.max(...arr);
   const exps = arr.map(v => Math.exp(v - m));
@@ -113,7 +113,7 @@ export function argTopK(probs, k){
   return probs.map((p,i)=>({p,i})).sort((a,b)=>b.p-a.p).slice(0,k);
 }
 
-// ---------- 概率条渲染 ----------
+// 概率条渲染
 export function renderBars(root, probs, highlightIdx){
   root.innerHTML='';
   for (let i=0;i<10;i++){

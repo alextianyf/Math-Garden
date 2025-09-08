@@ -1,65 +1,80 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MNIST 手写数字识别 Demo</title>
+  <title>Math Challenge — MNIST Handwriting</title>
   <link rel="stylesheet" href="./styles.css" />
-  <!-- TensorFlow.js + WASM 后端（CDN，适配 GitHub Pages） -->
+  <!-- TFJS + WASM -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@4.22.0/dist/tf-backend-wasm.min.js"></script>
 </head>
-<body>
-  <header class="app-header">
-    <h1>MNIST 手写数字识别（Web）</h1>
-    <div class="status">
-      <span id="backend">Backend: —</span>
-      <span id="modelStatus">Model: Loading…</span>
-      <span id="latency">Latency: — ms</span>
+<body class="garden">
+  <!-- Tiny HUD -->
+  <div class="hud-mini">
+    <span id="backend">Backend: —</span>
+    <span id="modelStatus">Model: Loading…</span>
+    <span id="latency">Latency: — ms</span>
+  </div>
+
+  <!-- Header -->
+  <header class="hero">
+    <h1 class="brand">Math Challenge</h1>
+    <div class="hero-hud">
+      <span id="gameLevel" class="chip">Level 1</span>
+      <div class="timer hero-timer"><div id="timerBar"></div></div>
+      <span id="gameScore" class="chip">0/10</span>
     </div>
   </header>
 
-  <main class="app-main">
-    <section class="panel panel-draw">
-      <h2>画板</h2>
-      <div class="toolbar">
-        <button id="clearBtn">清空</button>
-        <button id="undoBtn">撤销</button>
-        <label>笔宽 <input id="brushSize" type="range" min="8" max="48" value="24" /></label>
-        <label><input id="eraserToggle" type="checkbox" /> 橡皮擦</label>
-        <button id="inferBtn">识别</button>
-        <label class="upload">上传图片<input id="uploadInput" type="file" accept="image/*" hidden /></label>
+  <!-- Stage -->
+  <main class="stage">
+    <div class="equation">
+      <div class="expr">
+        <span id="problemText">Click "Start"</span>
+        <span id="eqSign" aria-hidden="true">=</span>
+        <span id="answerSlots" class="answer-slots">
+          <span class="slot" id="slot">_</span>
+        </span>
       </div>
-      <canvas id="pad" width="280" height="280" aria-label="手写画板"></canvas>
-      <p class="hint">提示：黑底白字，鼠标/触屏拖动书写。</p>
-    </section>
+    </div>
 
-    <section class="panel panel-preview">
-      <h2>预处理预览（28×28）</h2>
-      <canvas id="preview28" width="112" height="112"></canvas>
-      <div class="toggles">
-        <label><input id="blurToggle" type="checkbox" /> 轻微模糊（模拟 MNIST）</label>
-        <label><input id="centerToggle" type="checkbox" checked /> 质心对齐</label>
-      </div>
-      <details>
-        <summary>调试信息</summary>
-        <pre id="debug"></pre>
-      </details>
-    </section>
-
-    <section class="panel panel-result">
-      <h2>分类结果</h2>
-      <div id="predDigit" class="big-digit">—</div>
-      <div id="bars" class="bars"></div>
-      <ol id="topk" class="topk"></ol>
-    </section>
+    <!-- Handwriting canvas -->
+    <div class="answer-box">
+      <canvas id="pad" width="280" height="280" aria-label="Handwrite your answer"></canvas>
+    </div>
   </main>
 
-  <footer class="app-footer">
-    <span>部署到 GitHub Pages：确保 <code>./mnist_tfjs_model/model.json</code> 路径有效。</span>
-  </footer>
+  <!-- Status message (game hints / results) -->
+  <section id="statusWrap" aria-live="polite" aria-atomic="true">
+    <div id="statusMessage" class="status" role="status"></div>
+  </section>
 
-  <!-- 入口脚本（模块化） -->
-  <script type="module" src="./js/app.js"></script>
+  <!-- Controls -->
+  <section class="controls">
+    <button id="btnStartGame" class="btn primary">Start</button>
+    <button id="btnSubmit" class="btn accent" disabled>Submit</button>
+    <button id="btnGameClear" class="btn">Clear Canvas</button>
+  </section>
+
+  <!-- Track -->
+  <section class="track-wrap">
+    <div class="track">
+        <!-- 跑道角色 -->
+        <div id="hero" class="actor">😎</div>
+        <div id="monster" class="actor">👹</div>
+
+        <!-- 距离 meter（新加） -->
+        <div class="track-meter">
+        <div class="meter-bg"></div>
+        <div id="gapFill" class="meter-fill"></div>
+        <div id="gapText" class="meter-text"></div> <!-- 可选：显示剩余步数/像素 -->
+        </div>
+    </div>
+    </section>
+
+  <!-- Logic -->
+  <script type="module" src="./js/app.js?v=status-a"></script>
+  <script type="module" src="./js/game.js?v=status-a"></script>
 </body>
 </html>

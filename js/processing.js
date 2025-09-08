@@ -9,13 +9,13 @@ export function preprocessToMNIST(rgba, { srcW, srcH, blur=false, center=true })
     gray[i] = (0.299*r + 0.587*g + 0.114*b)/255;
   }
 
-  // 2) Otsu 阈值，自适应选择阈值方向（白字黑底为主，但也兼容上传白底黑字）
-  const mean = gray.reduce((a,b)=>a+b,0) / gray.length; // 0..1
+  // 2) Otsu，自适应反相（上传白底黑字也能统一）
+  const mean = gray.reduce((a,b)=>a+b,0) / gray.length;
   const th = otsu(gray);
-  const invert = mean > 0.5; // 平均偏亮 => 多半是白底黑字，需要反相
+  const invert = mean > 0.5;
   const bin = new Uint8Array(srcW*srcH);
   for (let i=0;i<bin.length;i++){
-    const isFg = gray[i] >= th; // 白
+    const isFg = gray[i] >= th;
     bin[i] = invert ? (isFg ? 0 : 1) : (isFg ? 1 : 0);
   }
 
@@ -79,7 +79,7 @@ export function preprocessToMNIST(rgba, { srcW, srcH, blur=false, center=true })
     gaussianBlur1D(canvas28, 28, 28, 0.8, true);
   }
 
-  // 8) 归一化到 [0,1]
+  // 8) 归一化
   let min=Infinity, max=-Infinity;
   for (const v of canvas28) { if (v<min) min=v; if (v>max) max=v; }
   const range = Math.max(1e-6, max-min);
