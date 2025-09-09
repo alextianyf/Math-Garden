@@ -1,78 +1,74 @@
 :root{
-  --bg: #1b2544;
-  --card: rgba(255,255,255,0.06);
-  --ink: #fff;
-  --ink-dim: #cfe4ff;
-  --accent: #4ade80;    /* green */
-  --accent2:#60a5fa;    /* blue */
-  --chip: rgba(255,255,255,0.1);
-  --btn: rgba(255,255,255,0.12);
-  --shadow: 0 12px 30px rgba(0,0,0,.25);
-  --radius: 16px;
+  /* Theme */
+  --bg:#1b2544; --ink:#fff; --ink-dim:#cfe4ff;
+  --card:rgba(255,255,255,.06); --chip:rgba(255,255,255,.1); --btn:rgba(255,255,255,.12);
+  --accent:#4ade80; --accent2:#60a5fa;
+  --shadow:0 12px 30px rgba(0,0,0,.25);
+  --radius:16px;
 
-  /* track */
-  --track-pad: 36px;      /* 轨道内左右留白，保证 emoji 不被截 */
-  --actor-size: 44px;     /* emoji 尺寸 */
-  --tick-color: rgba(255,255,255,.20);
-  --rail-color: rgba(255,255,255,.10);
+  /* Track */
+  --track-pad:36px;
+  --actor-size:44px;
+  --tick-color:rgba(255,255,255,.2);
+  --rail-color:rgba(255,255,255,.1);
+
+  /* Scales */
+  --space-xs: clamp(8px, 2vw, 14px);
+  --space-sm: clamp(10px, 3vw, 18px);
+  --space-md: clamp(12px, 3.5vw, 24px);
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0; color:var(--ink); background:var(--bg);
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* tiny HUD */
+/* Mini HUD */
 .hud-mini{
   font-size:12px; opacity:.75; display:flex; gap:12px;
   padding:6px 10px;
 }
 
-/* header + common containers */
+/* Common page containers */
 .hero, .stage, .controls, .track-wrap, .footnote, #statusWrap{
-  max-width:1200px; margin-inline:auto; padding-inline: clamp(12px,3vw,24px);
+  max-width:1200px; margin-inline:auto; padding-inline: var(--space-md);
 }
 .hero{padding-top:10px}
-.brand {
-  font-size: clamp(40px, 6vw, 72px); /* 比之前更大 */
-  line-height: 1.2;
-  letter-spacing: 1px;
-  margin: 12px 0 20px;
-  text-shadow: 0 2px 4px rgba(0,0,0,.3);
-  text-align: center;        /* ⬅️ 居中 */
-  width: 100%;               /* 占满宽度 */
-  display: block;            /* 防止受 flex 影响 */
+
+/* Title */
+.brand{
+  font-size: clamp(40px, 6vw, 72px);
+  line-height:1.2; letter-spacing:1px;
+  margin:12px 0 20px;
+  text-shadow:0 2px 4px rgba(0,0,0,.3);
+  text-align:center; width:100%; display:block;
 }
+
+/* Header HUD */
 .hero-hud{display:flex; align-items:center; gap:10px}
 .chip{background:var(--chip); padding:6px 10px; border-radius:999px; font-size:12px}
 
-/* 顶部装饰计时条（外框） */
+/* Top timer */
 .hero-timer{flex:1; height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden}
 .hero-timer > #timerBar{
-  height:100%; width:100%;
-  background:var(--accent);
-  transform-origin:left center;     /* 从左到右缩放 */
-  transform: scaleX(0);             /* stop 时 0；开始会置 1 */
+  height:100%; width:100%; background:var(--accent);
+  transform-origin:left center; transform:scaleX(0);
   border-radius:999px;
 }
 
-/* 舞台：左公式 — 右画布 */
+/* Stage: equation (left) + canvas (right) */
 .stage{
-  display: grid;
-  grid-template-columns: minmax(420px, auto) max-content; /* 左列按内容，至少 420px；右列贴内容 */
-  justify-content: center;                                 /* 整体居中 */
-  column-gap: clamp(24px, 5vw, 56px);                     /* 两列间距更自然 */
-  align-items: center;
-  margin-top: clamp(8px, 2.2vw, 14px);
+  display:grid;
+  grid-template-columns: minmax(420px, auto) max-content;
+  justify-content:center; column-gap: clamp(24px, 5vw, 56px);
+  align-items:center; margin-top: var(--space-xs);
 }
 
-/* 公式区域（右对齐，让 = 更靠近画布） */
+/* Equation area */
 .equation{
-  justify-self: end;     /* 等式块贴近中轴（右边） */
-  text-align: right;     /* 文本右对齐，= 更靠近画布 */
-  min-width: 420px;      /* 防止等式太短导致整体偏右 */
+  justify-self:end; text-align:right; min-width:420px;
 }
 .equation .expr{
   display:flex; align-items:baseline; flex-wrap:wrap;
@@ -81,7 +77,7 @@ body{
   line-height:1.15; color:#fff; text-shadow:0 2px 0 rgba(0,0,0,.25);
 }
 
-/* 答案槽 */
+/* Answer slots */
 .answer-slots .slot{
   display:inline-grid; place-items:center;
   min-width: clamp(36px,4.4vw,56px); height: clamp(36px,4.4vw,56px);
@@ -93,23 +89,20 @@ body{
 .slot.done{ background:#0f5; color:#042; border-color:#0a4 }
 .slot.wrong{ background:#3a1216; color:#fee; border-color:#c33 }
 
-/* 画布卡片 */
-/* ✅ 修改：让卡片贴合内容，消除右侧空白 */
+/* Canvas card */
 .answer-box{
-  background:var(--card);
-  border-radius:18px;
+  background:var(--card); border-radius:18px;
   padding: clamp(10px,2vw,16px);
   box-shadow: var(--shadow), inset 0 8px 20px rgba(0,0,0,.25);
-  width: max-content;         /* ← 关键改动 */
-  display: inline-block;      /* ← 关键改动 */
+  width: fit-content; display:inline-block;
 }
 #pad{
-  width: clamp(220px,30vw,360px); height:auto; aspect-ratio:1/1;
+  width: clamp(220px,30vw,360px); aspect-ratio:1/1;
   border-radius:12px; border:2px solid rgba(255,255,255,.85); background:#000;
 }
 
-/* 状态消息（可选） */
-#statusWrap{ margin: clamp(8px,2.5vw,16px) auto 0; }
+/* Status message */
+#statusWrap{ margin: var(--space-xs) auto 0; }
 .status{
   text-align:center; font-weight:700; font-size: clamp(14px,2vw,18px);
   padding:10px 14px; border-radius:12px; background:var(--card); color:#eaf2ff;
@@ -123,10 +116,10 @@ body{
 .status.success{ background: rgba(32,197,143,.14); border-color: rgba(32,197,143,.32); color:#d8fff2 }
 .status.error  { background: rgba(205,66,66,.16);  border-color: rgba(205,66,66,.36);  color:#ffe9ee }
 
-/* 控制按钮 */
+/* Buttons */
 .controls{
   display:flex; gap:12px; justify-content:center; align-items:center;
-  margin-top: clamp(10px,3vw,18px);
+  margin-top: var(--space-sm);
 }
 .btn{
   border:none; background:var(--btn); color:#fff; padding:10px 14px; border-radius:10px;
@@ -138,174 +131,88 @@ body{
 .btn.primary{ background: rgba(96,165,250,.22) }
 .btn.accent { background: rgba(74,222,128,.22) }
 
-/* ===== 追逐轨道（和步数严格对齐） ===== */
-.track-wrap{ margin-top: clamp(12px,3vw,22px) }
+/* Track (runner vs monster) */
+.track-wrap{ margin-top: var(--space-sm) }
 .track{
-  position:relative;
-  height:64px;
-  background: rgba(255,255,255,.07);
-  border-radius:999px;
-  overflow:hidden;
-  padding-inline: var(--track-pad);   /* 给 emoji 留出左右安全区 */
+  position:relative; height:64px; background: rgba(255,255,255,.07);
+  border-radius:999px; overflow:hidden; padding-inline: var(--track-pad);
 }
-
-/* 中间的细“铁路” */
-.track .rail{
-  position:absolute; left:var(--track-pad); right:var(--track-pad);
-  top: calc(50% + 8px); height: 14px;
-  background: var(--rail-color);
-  border-radius: 999px;
-}
-
-/* 刻度容器：与 rail 同宽 */
-.track .ticks{
+/* Optional rail + ticks (only if you render them) */
+.track .rail, .track .ticks{
   position:absolute; left:var(--track-pad); right:var(--track-pad);
   top: calc(50% + 8px); height:14px;
-  display:flex; justify-content:space-between; align-items:center;
-  pointer-events:none;
 }
-.track .tick{
-  width:2px; height:100%;
-  background: var(--tick-color);
-  opacity:.9;
-}
+.track .rail{ background: var(--rail-color); border-radius: 999px; }
+.track .ticks{ display:flex; justify-content:space-between; align-items:center; pointer-events:none; }
+.track .tick{ width:2px; height:100%; background: var(--tick-color); opacity:.9; }
 
-/* 角色 */
+/* Actors */
 .actor{
   position:absolute; top:10px; left:0;
-  font-size: var(--actor-size);
-  line-height:1;
+  font-size: var(--actor-size); line-height:1;
   user-select:none; pointer-events:none;
-  transform: translateX(0);
-  transition: transform .2s ease;
+  transform: translateX(0); transition: transform .2s ease;
 }
 
-/* ------ Help / Onboarding Modal ------ */
+/* Floating help button — TOP RIGHT */
 .help-fab{
   position: fixed;
-  right: 20px; top: 16px;
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.14);
-  color:#fff; border:1px solid rgba(255,255,255,.18);
-  font-weight:800; line-height: 36px; text-align:center;
-  cursor:pointer; z-index: 60;
-  backdrop-filter: blur(6px);
-}
-.help-fab:hover{ background: rgba(255,255,255,.22) }
-
-.modal-overlay{
-  position: fixed; inset: 0; z-index: 50;
-  background: rgba(0,0,0,.5);
-  display: grid; place-items: center;
-}
-.modal{
-  width: min(560px, 92vw);
-  background: var(--card, rgba(255,255,255,.06));
-  color: var(--ink, #fff);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 16px;
-  padding: 22px 20px;
-  box-shadow: var(--shadow, 0 12px 30px rgba(0,0,0,.25));
-}
-.modal h2{
-  margin: 4px 0 8px; font-size: clamp(18px, 2.2vw, 22px);
-}
-.modal-list{
-  margin: 8px 0 14px 18px; padding: 0;
-  display: grid; gap: 6px; font-size: clamp(14px, 1.9vw, 16px);
-}
-.modal-actions{
-  display:flex; gap:10px; justify-content:flex-end; margin-top: 6px;
-}
-
-/* ===== Help overlay ===== */
-.help-overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9999;                 /* 高于一切（画布、轨道等） */
-  display: grid;
-  place-items: center;
-  background: color-mix(in oklab, black 55%, transparent); /* 半透明遮罩 */
-  backdrop-filter: blur(2px);
-}
-.help-overlay[hidden]{ display: none; }
-
-.help-dialog{
-  width: min(640px, 92vw);
-  background: rgba(22, 30, 54, .96);
-  color: #eaf2ff;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 16px;
-  padding: 20px 22px;
-  box-shadow: 0 18px 44px rgba(0,0,0,.45);
-}
-.help-dialog h2{
-  margin: 0 0 10px 0;
-  font-size: clamp(18px, 2.2vw, 22px);
-}
-.help-list{
-  margin: 6px 0 14px;
-  padding-left: 20px;
-  line-height: 1.6;
-  font-size: clamp(14px, 1.8vw, 16px);
-}
-.help-actions{
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* 悬浮的 Help 按钮 */
-.help-fab{
-  position: fixed;
-  right: 16px;
-  bottom: 16px;
+  top: calc(16px + env(safe-area-inset-top));   /* account for notches */
+  right: calc(16px + env(safe-area-inset-right));
   z-index: 9998;
-  width: 44px; height: 44px;
+
+  width: 44px; height: 44px; line-height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,.18);
   background: rgba(255,255,255,.12);
-  color: #fff; font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,0,0,.35);
+  color:#fff; font-weight:800; text-align:center;
+  cursor:pointer; box-shadow: 0 8px 20px rgba(0,0,0,.35);
 }
 .help-fab:hover{ background: rgba(255,255,255,.18); }
 
-/* 让其它元素别“浮”到顶层（只是以防万一） */
-#pad, .stage, .answer-box, .track-wrap, .track { z-index: 1; position: relative; }
+/* Help overlay/dialog */
+.help-overlay{
+  position: fixed; inset: 0; z-index: 9999;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(2px);
+}
+.help-overlay[hidden]{ display:none; }
+.help-dialog{
+  width: min(640px, 92vw);
+  background: rgba(22,30,54,.96); color: #eaf2ff;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px; padding: 20px 22px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.45);
+}
+.help-dialog h2{ margin:0 0 10px; font-size: clamp(18px, 2.2vw, 22px); }
+.help-list{
+  margin:6px 0 14px; padding-left:20px;
+  line-height:1.6; font-size: clamp(14px, 1.8vw, 16px);
+}
+.help-actions{ display:flex; justify-content:flex-end; gap:10px; }
 
-/* ========= World (brighter & higher-contrast) ========= */
+/* Keep other elements below the overlay just in case */
+#pad, .stage, .answer-box, .track-wrap, .track { z-index:1; position:relative; }
+
+/* World background (simplified but keeps the vibe) */
 .world{
   position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
-  /* 轻微天空色渐变，加深顶部、提亮中部 */
-  background: radial-gradient(1200px 700px at 50% -250px, rgba(80,140,255,.25) 0, rgba(0,0,0,0) 60%),
-              linear-gradient(#0a1226 0%, #0c1833 55%, #0a1326 100%);
+  background:
+    radial-gradient(1200px 700px at 50% -250px, rgba(80,140,255,.25) 0, rgba(0,0,0,0) 60%),
+    linear-gradient(#0a1226 0%, #0c1833 55%, #0a1326 100%);
 }
-
-/* 通用滚动动画：不同层覆盖时长即可 */
 @keyframes scroll-x { from{background-position:0 100%} to{background-position:-10000px 100%} }
+@keyframes twinkle  { 0%,100%{opacity:.7} 50%{opacity:1} }
 
-/* = 星空层：更多/更亮/有微闪烁 = */
-@keyframes twinkle { 0%,100%{opacity:.7} 50%{opacity:1} }
 .world .sky{
   position:absolute; inset:0;
   background:
-    /* 一层大星星（更亮更稀疏） */
     radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.92) 50%, transparent 51%) 0 0/170px 170px,
-    radial-gradient(2px 2px at 38% 42%, rgba(255,255,255,.9)  50%, transparent 51%) 0 0/220px 220px,
-    radial-gradient(2px 2px at 72% 28%, rgba(255,255,255,.85) 50%, transparent 51%) 0 0/260px 260px,
-    /* 一层中星星（更密） */
-    radial-gradient(1.5px 1.5px at 20% 65%, rgba(200,230,255,.85) 50%, transparent 51%) 0 0/180px 180px,
-    radial-gradient(1.5px 1.5px at 60% 75%, rgba(210,235,255,.8)  50%, transparent 51%) 0 0/220px 220px,
-    radial-gradient(1.5px 1.5px at 85% 55%, rgba(210,235,255,.8)  50%, transparent 51%) 0 0/240px 240px,
-    /* 一层微噪点星尘 */
-    radial-gradient(1px 1px at 10% 10%, rgba(255,255,255,.35) 50%, transparent 51%) 0 0/140px 140px,
-    radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,.3)  50%, transparent 51%) 0 0/160px 160px;
+    radial-gradient(1.5px 1.5px at 60% 75%, rgba(210,235,255,.8) 50%, transparent 51%) 0 0/220px 220px,
+    radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,.35) 50%, transparent 51%) 0 0/160px 160px;
   animation: scroll-x 220s linear infinite, twinkle 3.5s ease-in-out infinite;
   opacity:.95;
 }
-
 .world .clouds{
   position:absolute; inset:0;
   background:
@@ -313,17 +220,5 @@ body{
     radial-gradient(200px 120px at 200px 100%, rgba(22,54,98,.92) 62%, transparent 63%) 0 100%/420px 200px repeat-x,
     linear-gradient(to top, rgba(8,22,45,.95), rgba(8,22,45,0) 65%);
   animation: scroll-x 26s linear infinite;
-  opacity:.95;
-  filter: drop-shadow(0 -6px 10px rgba(0,0,0,.5));
+  opacity:.95; filter: drop-shadow(0 -6px 10px rgba(0,0,0,.5));
 }
-
-/* = 危险脉冲保持不变，可选 = */
-body.danger .world::after{
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background: radial-gradient(60% 60% at 50% 60%, rgba(255,60,60,.16), rgba(255,60,60,0) 60%);
-  animation: dangerPulse 1.2s ease-in-out infinite;
-}
-@keyframes dangerPulse { 0%,100%{opacity:.0} 50%{opacity:.4} }
-
-/* 脚注 */
-.footnote{ margin-top: clamp(10px,2.5vw,16px); font-size: clamp(11px,1.6vw,12px); opacity:.7; text-align:center }
