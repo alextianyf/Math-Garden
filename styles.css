@@ -154,21 +154,32 @@ body{
   transform: translateX(0); transition: transform .2s ease;
 }
 
-/* Floating help button — TOP RIGHT */
-.help-fab{
+/* Help floating button (bigger size) */
+.help-fab {
   position: fixed;
-  top: calc(16px + env(safe-area-inset-top));   /* account for notches */
-  right: calc(16px + env(safe-area-inset-right));
+  right: 16px;
+  top: 16px;                 
   z-index: 9998;
 
-  width: 44px; height: 44px; line-height: 44px;
-  border-radius: 999px;
+  width: 60px;              
+  height: 60px;
+  border-radius: 50%;
+
   border: 1px solid rgba(255,255,255,.18);
   background: rgba(255,255,255,.12);
-  color:#fff; font-weight:800; text-align:center;
-  cursor:pointer; box-shadow: 0 8px 20px rgba(0,0,0,.35);
+  color: #fff;
+
+  font-weight: 800;
+  font-size: 28px;        
+  line-height: 60px;         
+  text-align: center;
+
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,.35);
 }
-.help-fab:hover{ background: rgba(255,255,255,.18); }
+.help-fab:hover {
+  background: rgba(255,255,255,.18);
+}
 
 /* Help overlay/dialog */
 .help-overlay{

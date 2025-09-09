@@ -1,42 +1,48 @@
 // js/help.js — onboarding modal (always shows on refresh)
 (() => {
+  // Grab modal overlay and controls
   const overlay   = document.getElementById('helpOverlay');
   const btnHelp   = document.getElementById('btnHelp');
   const btnGotIt  = document.getElementById('helpGotIt');
 
+  // If any required element is missing, abort initialization
   if (!overlay || !btnHelp || !btnGotIt) return;
 
+  // Remember which element had focus before opening (for accessibility)
   let lastFocused = null;
 
+  // Open the modal: show, move focus inside, and lock page scroll
   function openHelp() {
     lastFocused = document.activeElement;
     overlay.hidden = false;
-    btnGotIt.focus();
-    document.documentElement.style.overflow = 'hidden'; // 防止背景滚动
+    btnGotIt.focus(); // move keyboard focus to a safe control in the dialog
+    document.documentElement.style.overflow = 'hidden'; // prevent background page scroll
   }
+
+  // Close the modal: hide, restore scroll, and return focus to previous element
   function closeHelp() {
     overlay.hidden = true;
     document.documentElement.style.overflow = '';
     lastFocused?.focus?.();
   }
 
-  // ⭐ 每次刷新页面都自动弹出
+  // Auto-open on every page load (delayed slightly to avoid jank)
   window.addEventListener('DOMContentLoaded', () => {
     setTimeout(openHelp, 150);
   });
 
-  // Help 按钮
+  // Open when the floating Help button is clicked
   btnHelp.addEventListener('click', openHelp);
 
-  // “Got it” 关闭
+  // Close when the "Got it" button is clicked
   btnGotIt.addEventListener('click', closeHelp);
 
-  // 点击遮罩关闭
+  // Click outside the dialog content (on the overlay) to close
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeHelp();
   });
 
-  // Esc 关闭
+  // Press Escape to close (only when the modal is visible)
   document.addEventListener('keydown', (e) => {
     if (!overlay.hidden && e.key === 'Escape') closeHelp();
   });

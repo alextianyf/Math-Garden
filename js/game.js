@@ -3,26 +3,39 @@
 const el = (id) => document.getElementById(id);
 
 /* ===== Config ===== */
-const TOTAL_QUESTIONS   = 10;  // 一轮题目数
+// Total questions per run
+const TOTAL_QUESTIONS   = 10;
+// Whether to use a per-question timer
 const USE_TIMER         = true;
-const TIME_LIMIT_MS     = 8000;
-const START_GAP_STEPS   = 3;   // 开场 Hero 比 Monster 领先 3 格
-const STEP_HERO         = 1;   // 答对后 hero 前进步数
-const STEP_MONSTER      = 1;   // 答错/超时怪物前进一步
+// Time limit for each question (ms)
+const TIME_LIMIT_MS     = 10000;
+// Initial lead (in steps) of hero over monster
+const START_GAP_STEPS   = 3;
+// Steps hero advances on a correct answer
+const STEP_HERO         = 1;
+// Steps monster advances on a wrong/timeout
+const STEP_MONSTER      = 1;
 
 /* ===== State ===== */
+// Current question index (0..TOTAL_QUESTIONS)
 let qIndex = 0;
+// Count of correct answers
 let correct = 0;
+// Correct answer for the current problem (0..9)
 let currentAnswer = null;
+// Whether the game ended (caught or finished)
 let gameOver = false;
 
-let heroSteps = START_GAP_STEPS;   // 以“步数”为单位
+// Logical positions in "steps" (not pixels)
+let heroSteps = START_GAP_STEPS;
 let monsterSteps = 0;
 
+// Timer bookkeeping
 let timerId = null;
 let timerStart = 0;
 
 /* ===== DOM ===== */
+// Buttons and UI elements
 const btnStart   = el('btnStartGame') || document.querySelector('#btnStartGame');
 const btnSubmit  = el('btnSubmit');
 const btnClear   = el('btnGameClear');
@@ -35,9 +48,9 @@ const monsterEl  = el('monster');
 const trackEl    = document.querySelector('.track');
 
 /* ===== Helpers for equation row ===== */
-// ✅ 显示/隐藏 “= 与答案槽” 整行（用 visibility，不改变布局）
+// Show/hide the "= and answer slots" row via CSS visibility (layout remains stable)
 function setAnswerRowVisible(visible) {
-  // 优先寻找带 .eq 的等号；若没有则取第二个 span
+  // Prefer an explicit ".eq" span; otherwise fallback to the 2nd span under .expr
   const eqEl =
     document.querySelector('.equation .expr .eq') ||
     document.querySelector('.equation .expr > span:nth-child(2)');
@@ -48,33 +61,34 @@ function setAnswerRowVisible(visible) {
 }
 
 /* ===== Derived ===== */
+// Total number of tick marks equals total questions plus the initial gap
 function totalTicks() { return TOTAL_QUESTIONS + START_GAP_STEPS; }
 
-/* 轨道可用宽度（扣掉左右内边距） */
+// Usable track width in pixels (minus left/right padding set by --track-pad)
 function usableTrackWidth() {
   if (!trackEl) return 0;
   const pad = parseFloat(getComputedStyle(trackEl).getPropertyValue('--track-pad')) || 36;
   return Math.max(0, trackEl.clientWidth - pad * 2);
 }
 
-/* 步长像素 */
+// Pixel distance for one logical "step"
 function stepPx() {
   const ticks = totalTicks();
   return ticks > 0 ? usableTrackWidth() / ticks : 0;
 }
 
-/* ===== 轨道刻度（与逻辑严格一致） ===== */
+/* ===== Build the rail and tick marks (strictly aligned with step logic) ===== */
 function buildTicks() {
   if (!trackEl) return;
-  // 清除旧的
+  // Remove previous rails/ticks (if rebuilding)
   trackEl.querySelectorAll('.ticks,.rail').forEach(n => n.remove());
 
-  // rail
+  // Rail (the thin rounded line in the middle)
   const rail = document.createElement('div');
   rail.className = 'rail';
   trackEl.appendChild(rail);
 
-  // ticks
+  // Ticks (vertical marks evenly spaced along the rail)
   const ticksBox = document.createElement('div');
   ticksBox.className = 'ticks';
   const count = totalTicks();
@@ -86,7 +100,7 @@ function buildTicks() {
   trackEl.appendChild(ticksBox);
 }
 
-/* 将“步数” -> px 并应用到 transform */
+/* Convert logical steps → pixels and apply CSS transforms to hero/monster */
 function applyActorPositions() {
   const base = parseFloat(getComputedStyle(trackEl).getPropertyValue('--track-pad')) || 36;
   const pxPerStep = stepPx();
@@ -94,7 +108,7 @@ function applyActorPositions() {
   if (heroEl)    heroEl.style.transform    = `translateX(${base + heroSteps    * pxPerStep}px)`;
 }
 
-/* ===== 题目生成（结果保证 0..9） ===== */
+/* ===== Problem generation (ensures answer is 0..9) ===== */
 function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 function genProblem() {
@@ -104,7 +118,7 @@ function genProblem() {
   let a, b, ans;
   if (op === '+') {
     a = randInt(0,9); b = randInt(0,9);
-    ans = a + b; if (ans > 9) return genProblem();
+    ans = a + b; if (ans > 9) return genProblem(); // keep answer within 0..9
   } else if (op === '-') {
     a = randInt(0,9); b = randInt(0,9);
     ans = a - b; if (ans < 0) return genProblem();
@@ -114,7 +128,7 @@ function genProblem() {
   } else { // ÷
     b = randInt(1,9);
     ans = randInt(0,9);
-    a = ans * b;
+    a = ans * b; // ensures a / b = ans exactly (integer division)
   }
   return { a, b, op, ans };
 }
@@ -123,6 +137,7 @@ function renderProblemText(p) {
   if (problemEl) problemEl.textContent = `${p.a} ${p.op} ${p.b}`;
 }
 
+// Visual state of the single answer slot (colors and styles)
 function setSlotState(state) {
   const slot = slotsEl?.querySelector('.slot');
   if (!slot) return;
@@ -141,7 +156,7 @@ function resetSlot() {
 function startTimer() {
   if (!USE_TIMER || !timerBar) return;
   stopTimer();
-  // 起始为满格
+  // Start with a full progress bar (scaleX=1), then shrink to 0
   timerBar.style.transform = 'scaleX(1)';
   timerStart = performance.now();
   timerId = requestAnimationFrame(tick);
@@ -156,13 +171,14 @@ function tick() {
   const ratio = Math.max(0, Math.min(1, 1 - elapsed / TIME_LIMIT_MS));
   if (timerBar) timerBar.style.transform = `scaleX(${ratio})`;
   if (elapsed >= TIME_LIMIT_MS) {
-    onJudge(false, true);
+    onJudge(false, true); // timeout counts as incorrect
     return;
   }
   timerId = requestAnimationFrame(tick);
 }
 
-/* ===== 流程 ===== */
+/* ===== Flow ===== */
+// Start a new question (generate, render, reset UI states)
 function nextQuestion() {
   if (qIndex >= TOTAL_QUESTIONS || gameOver) return;
 
@@ -171,15 +187,17 @@ function nextQuestion() {
   renderProblemText(p);
   resetSlot();
 
-  // ✅ 出题时确保“= 与答案槽”可见
+  // Ensure "= and answer slots" are visible when a new question appears
   setAnswerRowVisible(true);
 
+  // Clear drawing pad and prediction UI
   window.clearCanvas && window.clearCanvas();
 
   if (scoreEl) scoreEl.textContent = `${qIndex}/${TOTAL_QUESTIONS}`;
   if (USE_TIMER) startTimer();
 }
 
+// Ask the model once and judge the result
 async function judgeOnce() {
   if (qIndex >= TOTAL_QUESTIONS || gameOver) return;
   const pred = await window.getDigitPrediction?.();
@@ -192,6 +210,7 @@ async function judgeOnce() {
   onJudge(isCorrect, false);
 }
 
+// Apply judgment: move actors, check caught/finish, and proceed or stop
 function onJudge(isCorrect /*, timeout */) {
   stopTimer();
 
@@ -204,20 +223,21 @@ function onJudge(isCorrect /*, timeout */) {
     monsterSteps += STEP_MONSTER;
   }
 
-  // 应用位移（与步数一致）
+  // Update visual positions according to steps
   applyActorPositions();
 
-  // 是否被追上
+  // Check if the monster caught the hero
   if (monsterSteps >= heroSteps) {
     gameOver = true;
     if (problemEl) problemEl.textContent = `Caught! Correct ${correct}/${TOTAL_QUESTIONS} — press "Start" to try again`;
     qIndex = TOTAL_QUESTIONS;
     if (scoreEl) scoreEl.textContent = `${qIndex}/${TOTAL_QUESTIONS}`;
-    resetSlot();                 // 先把槽重置
-    setAnswerRowVisible(false);  // ✅ 再隐藏“= 与答案槽”
+    resetSlot();                 // reset slot display
+    setAnswerRowVisible(false);  // hide "= and answer slots" after game over
     return;
   }
 
+  // Move to next question or finish
   qIndex++;
   if (scoreEl) scoreEl.textContent = `${qIndex}/${TOTAL_QUESTIONS}`;
 
@@ -226,8 +246,8 @@ function onJudge(isCorrect /*, timeout */) {
       ? 'Stage clear! 10/10 — press "Start" to replay'
       : `Finished! Correct ${correct}/${TOTAL_QUESTIONS} — press "Start" to replay`;
     if (problemEl) problemEl.textContent = msg;
-    resetSlot();                 // 先把槽重置
-    setAnswerRowVisible(false);  // ✅ 再隐藏“= 与答案槽”
+    resetSlot();
+    setAnswerRowVisible(false);  // hide slots at the end of the run
     return;
   }
 
@@ -248,11 +268,11 @@ function resetGame() {
   resetSlot();
   window.clearCanvas && window.clearCanvas();
 
-  // 先确保 ticks 存在，再放置角色
+  // Ensure ticks exist before positioning actors
   buildTicks();
   applyActorPositions();
 
-  // ✅ 重置时默认显示“= 与答案槽”，防止上局隐藏后不再出现
+  // Make sure slots are visible at reset (in case previous run hid them)
   setAnswerRowVisible(true);
 
   if (scoreEl) scoreEl.textContent = `0/${TOTAL_QUESTIONS}`;
@@ -263,19 +283,20 @@ function startGame() {
 }
 
 /* ===== Events ===== */
+// Primary controls
 btnStart?.addEventListener('click', startGame);
 btnSubmit?.addEventListener('click', judgeOnce);
 btnClear?.addEventListener('click', () => {
   window.clearCanvas && window.clearCanvas();
 });
 
-/* 窗口缩放：重建刻度并根据最新宽度换算像素 */
+// Rebuild ticks and recompute pixel step size on resize
 window.addEventListener('resize', () => {
   buildTicks();
   applyActorPositions();
 });
 
-/* 模型就绪解锁按钮 */
+// When the model is ready, enable buttons and fix placeholder text if needed
 window.addEventListener('model-ready', () => {
   btnStart && (btnStart.disabled = false);
   btnSubmit && (btnSubmit.disabled = false);
@@ -284,10 +305,9 @@ window.addEventListener('model-ready', () => {
   }
 });
 
-/* 首次进入也建好 ticks + 位置 */
+// On first load: build ticks, position actors, ensure slots visible
 document.addEventListener('DOMContentLoaded', () => {
   buildTicks();
   applyActorPositions();
-  // ✅ 初始也确保可见（防止从缓存恢复时被隐藏）
   setAnswerRowVisible(true);
 });
