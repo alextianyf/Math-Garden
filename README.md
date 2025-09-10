@@ -42,12 +42,12 @@ This project showcases both the end-to-end deep learning workflow (data → trai
     - [5. Install Project Dependencies](#5-install-project-dependencies)
   - [Tech Stack](#tech-stack)
   - [Model Pipeline Workflow](#model-pipeline-workflow)
-  - [Broader Impact \& Applications](#broader-impact--applications)
   - [Model Performance](#model-performance)
     - [Classification Report](#classification-report)
     - [Training Curves](#training-curves)
     - [Confusion Matrix](#confusion-matrix)
     - [Sample Predictions](#sample-predictions)
+  - [Broader Impact \& Applications](#broader-impact--applications)
   - [Future Improvements](#future-improvements)
   - [Acknowledgments](#acknowledgments)
   - [License](#license)
@@ -247,30 +247,6 @@ The project consists of two major parts:
 
 ---
 
-## Broader Impact & Applications
-
-Although **Math Run** is presented as a playful demo, the underlying concepts are highly transferable and can be applied across industries:
-
-- **Handwriting & Character Recognition**  
-  - The digit recognition pipeline can be extended to recognize letters, signatures, or symbols.  
-  - Applications include document digitization, form processing, and handwriting-based authentication.  
-
-- **Human-Computer Interaction (HCI)**  
-  - The browser-based drawing pad shows how web interfaces can integrate with deep learning models in real-time.  
-  - Similar pipelines can be adapted for sketch-based search engines, educational tools, or accessibility solutions.  
-
-- **Gamification in Education & Training**  
-  - Combining interactive gameplay with ML showcases how gamification can enhance learning.  
-  - Similar methods could be used to teach math, language, or even industrial training scenarios.  
-
-- **Edge & Browser-Based AI**  
-  - By deploying models with TensorFlow.js, this project highlights how inference can happen entirely on-device, without backend servers.  
-  - This idea is transferable to privacy-sensitive applications such as healthcare diagnostics, financial services, or personal assistants.  
-
-In short, while **Math Run** is a simple demo, the techniques behind it—data preprocessing, model training, browser deployment, and real-time interaction—form a foundation that can be adapted to many exciting domains.
-
----
-
 ## Model Performance
 
 The trained MLP model achieved high performance on the MNIST dataset:
@@ -317,6 +293,30 @@ The trained MLP model achieved high performance on the MNIST dataset:
 </div>
 
 The model shows consistent performance across all digit classes with minimal misclassification.
+
+---
+
+## Broader Impact & Applications
+
+Although **Math Run** is presented as a playful demo, the underlying concepts are highly transferable and can be applied across industries:
+
+- **Handwriting & Character Recognition**  
+  - The digit recognition pipeline can be extended to recognize letters, signatures, or symbols.  
+  - Applications include document digitization, form processing, and handwriting-based authentication.  
+
+- **Human-Computer Interaction (HCI)**  
+  - The browser-based drawing pad shows how web interfaces can integrate with deep learning models in real-time.  
+  - Similar pipelines can be adapted for sketch-based search engines, educational tools, or accessibility solutions.  
+
+- **Gamification in Education & Training**  
+  - Combining interactive gameplay with ML showcases how gamification can enhance learning.  
+  - Similar methods could be used to teach math, language, or even industrial training scenarios.  
+
+- **Edge & Browser-Based AI**  
+  - By deploying models with TensorFlow.js, this project highlights how inference can happen entirely on-device, without backend servers.  
+  - This idea is transferable to privacy-sensitive applications such as healthcare diagnostics, financial services, or personal assistants.  
+
+In short, while **Math Run** is a simple demo, the techniques behind it—data preprocessing, model training, browser deployment, and real-time interaction—form a foundation that can be adapted to many exciting domains.
 
 ---
 
